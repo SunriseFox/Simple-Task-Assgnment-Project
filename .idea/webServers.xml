@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="822b34e3-2b01-42e5-a5ef-349e261f3480" name="api" url="http://api.vampire.rip">
+        <fileTransfer host="144.202.106.21" port="22" privateKey="D:\id_rsa" rootFolder="/var/www/co" accessType="SFTP" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

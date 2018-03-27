@@ -1,0 +1,73 @@
+<div class="ui mini modal">
+    <div class="header">
+        登录
+    </div>
+    <div class="content">
+        <form class="ui form" id="login_form">
+            <div class="ui icon violet error message">
+                <i class="exclamation triangle icon"></i>
+                <div class="content" id="err_content">
+                </div>
+            </div>
+            <div class="required field">
+                <label>学号</label>
+                <input type="text" name="student_id" placeholder="Student ID">
+            </div>
+            <div class="required field">
+                <label>密码</label>
+                <input type="password" name="password" placeholder="Password">
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui left floated deny button">返回</div>
+        <div class="ui teal button" onclick="showModal(this, '/register', true)">
+            注册
+        </div>
+        <div class="ui positive right labeled icon button">
+            登录
+            <i class="checkmark icon"></i>
+        </div>
+    </div>
+</div>
+<script>
+  var modal = $('.ui.modal').modal({
+    closable: false,
+    onApprove: function () {
+      var form = $('#login_form')
+      var button = $('.positive.button')
+      button.addClass('loading')
+      $('input').parent('div').removeClass('error')
+      form.removeClass('error')
+      $.post({
+        url: '/login',
+        data: form.serialize(),
+        success: function (data) {
+          if (data.success){
+            history.back()
+            location.reload();
+          }
+          else {
+            var error = data.error
+            var err_elem = $('#err_content')
+            var err_info = ''
+            if(error) {
+              Object.keys(error).forEach(function (k) {
+                var elem = $('input[name=' + k + ']')
+                elem.parent('div').addClass('error')
+                var hint = elem.siblings('label').html()
+                err_info += ('<div><b>' + hint + ' </b>' + error[k] + '</div>')
+              })
+            } else {
+              err_info = '<li><b>学号或密码不正确</b></li>'
+            }
+            err_elem.html(err_info)
+            form.addClass('error')
+            button.removeClass('loading')
+          }
+        }
+      })
+      return false
+    }
+  })
+</script>

@@ -1,0 +1,32 @@
+<div class="ui feed">
+    <%for(var i = 0; i < feeds.length; i++) {%>
+    <div class="event">
+        <div class="label">
+            <img src="https://api.adorable.io/avatars/256/<%= feeds[i].nickname %>@vampire.png">
+        </div>
+        <div class="content">
+            <div class="summary">
+                <a class="user" onclick='loadView(this, "/users/<%=feeds[i].student_id%>")'>
+                    <%=feeds[i].nickname%>(<%=feeds[i].student_id%>)<i class="<%= feeds[i].perm >=9 ? "shield alternate" : "user"%> icon"></i>
+                </a> <%= feeds[i].type %> <a onclick='loadView(this, "/tasks/<%= feeds[i].task_id%>")'><%= feeds[i].title %></a>
+            </div>
+            <% if( feeds[i].has_file && (feeds[i].usn || feeds[i].stored_name) ) {%>
+            <div class="extra text">
+                <i class="file icon"></i><a href="/files/<%= feeds[i].usn ? feeds[i].usn : feeds[i].stored_name%>"><%= feeds[i].uof ? feeds[i].uof : feeds[i].origin_file%></a>
+            </div>
+            <% } %>
+            <div class="meta">
+                <a class="<%= feeds[i].ust ? "active " :""%>like" feed="<%=feeds[i].feed_id%>">
+                    <i class="like icon"></i> <b><%= feeds[i].starred %></b> Likes
+                </a>
+                <a class="date">
+                    <%= moment(feeds[i].since).fromNow() %>
+                </a>
+            </div>
+        </div>
+    </div>
+    <%}%>
+</div>
+<script>
+  init_feeds()
+</script>

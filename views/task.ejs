@@ -1,0 +1,181 @@
+<div class="ui vertical segment">
+    <h2 class="icon header"><i class="envelope open outline icon"></i>任务详情 - <%= task.title %></h2>
+    <div class="ui basic segment">
+        <% if(task.uac === null || task.uac === undefined) {
+        if(task.active) { %>
+        <a class="ui brown ribbon label">未报名</a>
+        <% } else { %>
+        <a class="ui grey ribbon label">无法报名</a>
+        <% }
+        } else if(task.uac === false) { %>
+        <a class="ui grey ribbon label">已放弃</a>
+        <%
+        } else if(task.uap) { %>
+        <a class="ui green ribbon label">已完成</a>
+        <% } else if(task.usu) { %>
+        <a class="ui olive ribbon label">已提交</a>
+        <% } else { %>
+        <a class="ui yellow ribbon label">待提交</a>
+        <% } %>
+        <table class="ui celled table">
+            <tr>
+                <td>任务ID</td>
+                <td><%= task.task_id %></td>
+            </tr>
+            <tr>
+                <td>任务名称</td>
+                <td><%= task.title %></td>
+            </tr>
+            <tr>
+                <td>任务详情</td>
+                <td><%- task.description %></td>
+            </tr>
+            <tr>
+                <td>任务附件</td>
+                <td><%- task.origin_file ? "<a href=/files/" + task.stored_name + ">" + task.origin_file + "</a>" : "-" %></td>
+            </tr>
+            <tr>
+                <td>附件下载量</td>
+                <td><%= task.download %></td>
+            </tr>
+            <tr>
+                <td>任务时限</td>
+                <td><%- task.end ? new Date(task.start).toLocaleString() + ' ~ ' + new Date(task.end).toLocaleString() : "无时限" %></td>
+            </tr>
+            <tr>
+                <td>布置时间</td>
+                <td><%= new Date(task.since).toLocaleDateString() %></td>
+            </tr>
+            <tr>
+                <td>当前状态</td>
+                <td>报名：<%= task.accepted %>，提交：<%= task.submitted %>，已完成：<%= task.approved %></td>
+            </tr>
+        </table>
+        <div class="column">
+            <% if(task.uac && !task.usu && !task.uap){ %>
+            <button name="abort" class="ui right floated teal button">放弃</button>
+            <% } %>
+            <% if(task.usu && !task.uap){ %>
+            <button name="reset" class="ui right floated yellow button">重新提交</button>
+            <% } %>
+            <% if(task.uac && !task.usu){ %>
+            <button class="ui right floated green button" onclick="$('#upload_segment').slideDown()">提交文档</button>
+            <% } %>
+            <% if(task.uac !== true) {
+            if((task.uac === null || task.uac === undefined) && task.active) {
+            %>
+            <button name="accept" class="ui right floated olive button">报名</button>
+            <% }
+            else { %>
+            <a class="ui grey right ribbon label">无法报名</a>
+            <% }
+            } %>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+</div>
+<div class="ui vertical segment" id="upload_segment" style="display: none">
+    <h2 class="icon header"><i class="upload icon"></i>上传文档</h2>
+    <form id="file_submit" class="ui tiny form" enctype="multipart/form-data" method="post"
+          action="/tasks/<%= task.task_id %>">
+        <div class="inline required field">
+            <label>请选择要上传的文件 </label>
+            <input type="file" name="file" style="width: 64%">
+            <button class="ui purple basic button" type="submit">上传</button>
+        </div>
+    </form>
+</div>
+<% if(task.usu) { %>
+<div class="ui vertical segment">
+    <h2 class="icon header"><i class="upload icon"></i>我的提交</h2>
+    <table class="ui very basic compact center aligned celled table">
+        <tr>
+            <th>文件</th>
+            <th>提交时间</th>
+            <th>下载量</th>
+            <th>审核状态</th>
+        </tr>
+        <tr>
+            <td><a href="/files/<%= task.usn %>"><%= task.uof %></a></td>
+            <td><%= new Date(task.usi).toLocaleString() %></td>
+            <td><%= task.udt %></td>
+            <td><%= task.uap ? "已完成" : "待审核" %></td>
+        </tr>
+    </table>
+</div>
+<% } %>
+<% if(locals.all) { %>
+<div class="ui vertical segment">
+    <h2 class="icon header"><i class="print icon"></i>所有参与者</h2>
+    <table class="ui very basic compact center aligned celled table">
+        <tr>
+            <th>提交人</th>
+            <th>附件</th>
+            <th>最后更新</th>
+            <th>下载量</th>
+            <th>状态</th>
+        </tr>
+        <% for(var i = 0; i < all.length; i++) { %>
+        <tr>
+            <td><a onclick="loadView(this,'/users/<%= all[i].student_id %>')"> <%= all[i].student_id %>（<%= perm >= 9 ? all[i].realname : all[i].nickname %>）</a></td>
+            <td>
+                <% if(all[i].usn) { %>
+                <a href="/files/<%= all[i].usn %>"><%= all[i].uof %></a>
+                <% } else { %>
+                -
+                <% } %>
+            </td>
+            <td><%= new Date(all[i].usi).toLocaleString() %></td>
+            <td><%= all[i].udt || "-" %></td>
+            <td>
+                <% if(all[i].uac === false) { %>
+                <a class="ui grey label">已放弃</a>
+                <%
+                } else if(all[i].uap) { %>
+                <a class="ui green label">已完成</a>
+                <% } else if(all[i].usu) { %>
+                <a class="ui olive label"<%= perm >= 9 ? (" onclick=taskApproveSubmit(" + all[i].assignment_id + ")") : "" %>>已提交
+                    <% if (perm >= 9) { %>
+                    <i class="key icon"></i>
+                    <% } %>
+                </a>
+                <% } else { %>
+                <a class="ui yellow label">待提交</a>
+                <% } %>
+            </td>
+        </tr>
+        <% } %>
+    </table>
+</div>
+<% } %>
+<%- include('comments') %>
+<script>
+  $('button[name]').click(function () {
+    var name = $(this).attr('name')
+    showConfirmModal('确定要 ' + $(this).html() + ' 吗？', {
+      url: '/tasks/<%= task.task_id %>/' + name,
+      success: function (data) {
+        if (data.success) history.go(0)
+        else showFailedModal('失败了')
+      }
+    })
+  })
+  $('#file_submit').submit(function (e) {
+    var formData = new FormData(this)
+    e.preventDefault()
+    $.post({
+      url: '/tasks/<%= task.task_id %>',
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function (data) {
+        if (data.success) history.go(0)
+        else showFailedModal('失败了')
+      }
+    })
+  })
+
+  function taskApproveSubmit (i) {
+    approveSubmit(<%= task.task_id %>, i)
+  }
+</script>

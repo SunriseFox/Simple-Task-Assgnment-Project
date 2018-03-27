@@ -1,0 +1,31 @@
+    <div class="ui vertical segment">
+        <h2 class="icon header"><i class="blue like icon"></i>我的收藏</h2>
+        <table class="ui very basic celled table" id="star_table">
+            <thead>
+            <tr>
+                <th>用户</th>
+                <th>学号</th>
+                <th>任务信息</th>
+                <th>提交信息</th>
+                <th><i class="star icon"></i></th>
+            </tr>
+            </thead>
+            <%for(var i = 0; i < data.length; i++) {%>
+            <tr>
+                <td><img class="ui avatar image" src="https://api.adorable.io/avatars/256/<%= data[i].nickname %>@vampire.png"><%= perm > 9 ? data[i].realname :data[i].nickname %></td>
+                <td><%= data[i].student_id %></td>
+                <td><a onclick='loadView(this, "/tasks/<%=data[i].task_id%>")'> <%= data[i].title %></a>
+                    (<% if(data[i].origin_file) {%>
+                    <a href="/files/<%=data[i].stored_name%>"><%=data[i].origin_file%></a>
+                    <%} else { %> 无文件 <% } %>)
+                </td>
+                <td><% if(data[i].usn) { %> <%=data[i].type%> <a href="/files/<%=data[i].usn%>"><%=data[i].uof%></a><% }
+                else { %> <%=data[i].type%> 任务 <% } %></td>
+                <td><i class="red like icon" feed="<%=data[i].feed_id%>"></i><b><%=data[i].starred%></b></td>
+            </tr>
+            <% } %>
+        </table>
+    </div>
+<script>
+  init_stars()
+</script>

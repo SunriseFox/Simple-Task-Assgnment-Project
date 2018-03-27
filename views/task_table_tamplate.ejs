@@ -1,0 +1,39 @@
+<table class="ui very basic celled center aligned loading table" id="task_table">
+    <thead>
+    <tr>
+        <th>时限</th>
+        <th>任务</th>
+        <th>任务附件</th>
+        <th>报名 / 提交 / 审核</th>
+        <th>状态</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% for(var i=0; i<tasks.length; i++) { %>
+    <tr>
+        <td><%- tasks[i].end ? moment(tasks[i].start).fromNow() + ' ~ ' + moment(tasks[i].end).fromNow() : "无时限"%></td>
+        <td><a data-tooltip="<%= stripTag(tasks[i].description) %>" data-position="right center" onclick='loadView(this,"/tasks/<%= tasks[i].task_id %>")'><%= tasks[i].title %></a></td>
+        <td><%- tasks[i].origin_file? "<a href=/files/"+tasks[i].stored_name+">"+tasks[i].origin_file+"</a>" : "-" %></td>
+        <td><%= tasks[i].accepted + " / " + tasks[i].submitted + " / " + tasks[i].approved %>
+        <td>
+            <% if(tasks[i].uac === null || tasks[i].uac === undefined) {
+            if(tasks[i].active) { %>
+            <a onclick='loadView(this, "/tasks/<%= tasks[i].task_id %>")' class="ui brown label">未报名</a>
+            <%} else { %>
+            <a onclick='loadView(this, "/tasks/<%= tasks[i].task_id %>")' class="ui grey label">无法报名</a>
+            <% }
+            } else if(tasks[i].uac === false) { %>
+            <a onclick='loadView(this, "/tasks/<%= tasks[i].task_id %>")' class="ui grey label">已放弃</a><%
+            } else if(tasks[i].uap) { %>
+            <a onclick='loadView(this, "/tasks/<%= tasks[i].task_id %>")' class="ui green label">已完成</a>
+            <% } else if(tasks[i].usu) {%>
+            <a onclick='loadView(this, "/tasks/<%= tasks[i].task_id %>")' class="ui olive label">已提交</a>
+            <% } else { %>
+            <a onclick='loadView(this, "/tasks/<%= tasks[i].task_id %>")' class="ui yellow label">待提交</a>
+            <% } %>
+        </td>
+    </tr>
+    <% } %>
+    </tbody>
+</table>
+

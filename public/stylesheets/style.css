@@ -1,0 +1,38 @@
+@font-face {
+    font-family: 'jdzyj';
+    src: url('/fonts/jdzyj.eot');
+    src: url('/fonts/jdzyj.eot?#iefix') format('embedded-opentype'),
+    url('/fonts/jdzyj.woff2') format('woff2'),
+    url('/fonts/jdzyj.woff') format('woff'),
+    url('/fonts/jdzyj.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    padding: 50px;
+    font: 14px "jdzyj", 'Microsoft YaHei UI';
+}
+
+a {
+    color: #00B7FF;
+}
+
+table tr td:first-child {
+    white-space: nowrap;
+}
+
+#task_table tr td:nth-child(4) {
+    text-align: center;
+}
+
+th {
+    padding-bottom: 0.46rem
+}
+
+.icon.header i{
+    margin-right: 1.22rem;
+}
+.ui.comments .comment .avatar img, .ui.comments .comment img.avatar {
+    border-radius: unset!important;
+}

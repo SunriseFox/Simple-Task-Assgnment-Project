@@ -1,0 +1,109 @@
+    <div class="ui vertical segment">
+        <h2 class="icon header"><i class="users icon"></i>用户信息</h2>
+        <div class="ui equal width grid">
+            <div class="ui four wide circular image column"><img src="https://api.adorable.io/avatars/512/<%= info.nickname %>@vampire.png"></div>
+            <div class="column">
+                <form class="ui form" action="/users" method="post" id="info_form">
+                    <table class="ui very basic celled center aligned table">
+                        <tbody>
+                        <tr>
+                            <td>学号</td>
+                            <td><%= info.student_id %></td>
+                        </tr>
+                        <tr>
+                            <td>真实姓名</td>
+                            <td><%= info.realname %></td>
+                        </tr>
+                        <tr>
+                            <td>昵称</td>
+                            <td><%= info.nickname %></td>
+                        </tr>
+                        <tr>
+                            <td>注册时间</td>
+                            <td><%= moment(info.since).fromNow() %></td>
+                        </tr>
+                        <tr>
+                            <td>提交状态</td>
+                            <td>
+                                <% if(info.uac === null) { %>
+                                无记录
+                                <% } else { %>
+                                <%= info.uac %> 接受， <%= info.usu %> 提交， <%= info.uap %> 完成， <%= info.uab %> 放弃
+                                <% } %>
+                            </td>
+                        </tr>
+                        <% if(user === info.uid){ %>
+                        <tr>
+                            <td>修改密码：</td>
+                            <td>
+                                <div class="field"><input placeholder="Password" name="password" id="pwd"/></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>确认密码：</td>
+                            <td>
+                                <div class="field"><input placeholder="Repeat Password" id="pwdr"/></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><button type="submit" class="ui right floated green button">提交</button></td>
+                        </tr>
+                        <% } %>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+    <% if(locals.data){ %>
+    <div class="ui vertical segment">
+        <h2 class="icon header"><i class="users icon"></i>参与任务</h2>
+        <table class="ui very basic center aligned selectable celled table">
+            <tr>
+                <th>任务</th>
+                <th>最近活动</th>
+                <th>附件</th>
+                <th>下载量</th>
+                <th>提交状态</th>
+            </tr>
+            <% for(var i = 0; i < data.length; i++) { %>
+            <tr>
+                <td data-tooltip="<%= stripTag(data[i].description) %>">
+                    <a onclick='loadView(this, "/tasks/<%= data[i].task_id %>")'><%= data[i].title %></a>
+                </td>
+                <td><%= new Date(data[i].usi).toLocaleString() %></td>
+                <td><a href="/files/<%= data[i].usn %>"><%= data[i].uof %></a></td>
+                <td><%= data[i].udt %></td>
+                <td>
+                    <% if(data[i].uac === false) { %>
+                    <a class="ui grey label">已放弃</a>
+                    <%
+                    } else if(data[i].uap) { %>
+                    <a class="ui green label">已完成</a>
+                    <% } else if(data[i].usu) { %>
+                    <a class="ui olive label"<%= perm >= 9 ? (" onclick='approveSubmit(" + data[i].task_id + ', ' + data[i].assignment_id + ")'") : "" %>>已提交
+                        <% if (perm >= 9) { %>
+                        <i class="key icon"></i>
+                        <% } %>
+                    </a>
+                    <% } else { %>
+                    <a class="ui yellow label">待提交</a>
+                    <% } %>
+                </td>
+            </tr>
+            <% } %>
+        </table>
+    </div>
+    <% } %>
+<% if(user === info.uid){ %>
+<script>
+  $('#info_form').submit(function (e) {
+    var pwd = $('#pwd')
+    var pwdr = $('#pwdr')
+    if (pwd.val() === pwdr.val()) return true
+    pwd.parent('div').addClass('error')
+    pwdr.parent('div').addClass('error')
+    return false
+  })
+</script>
+<% } %>

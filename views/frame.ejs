@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<!--suppress HtmlUnknownTarget -->
+<html>
+<head>
+    <title><%= title %> - 计算机组成原理</title>
+    <link rel='stylesheet' href='/stylesheets/semantic.min.css'/>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.js"></script>
+    <script src="/javascripts/header_prod.js"></script>
+</head>
+<body>
+<div id="modal-wrapper"></div>
+<div class="ui container">
+    <div class="ui equal width grid">
+        <div class="four wide large screen only column" id="left_side">
+            <div class="row">
+                <h2 class="ui center aligned icon header">
+                    <% if (locals.user) { %>
+                    <img class="ui circular image" src="https://api.adorable.io/avatars/256/<%=locals.nickname%>@vampire.png">
+                    <%= locals.nickname %>
+                    <% } else { %>
+                    <i class="circular question icon"></i>
+                    <a onclick="showModal(this, '/login', true)">点击登录</a>
+                    <% } %>
+                </h2>
+            </div>
+            <div class="row" style="margin-top: 1.4rem; margin-left: 2rem">
+                <div class="ui vertical pointing menu" id="main_menu">
+                    <a class="active item" path="/">
+                        首页
+                    </a>
+                    <a class="item" path="/tasks">
+                        全部任务
+                    </a>
+                    <a class="item" path="/assignments">
+                        我的任务
+                    </a>
+                    <a class="item" path="/stars">
+                        我的收藏
+                    </a>
+                    <a class="item" path="/users">
+                        用户设置
+                    </a>
+                    <% if(locals.user) {
+                      if(locals.perm >= 9) { %>
+                    <a class="item" path="/admin/task">
+                        管理任务
+                    </a>
+                    <a class="item" path="/admin/user">
+                        管理用户
+                    </a>
+                    <% } %>
+                    <a class="item" path="/logout">
+                        退出登录
+                    </a>
+                   <% } %>
+                    <div class="item">
+                        <div class="ui search">
+                            <div class="ui right icon input" style="width: 100%;">
+                                <input class="prompt" type="text" placeholder="Search Tasks">
+                                <i class="search icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui basic segment column" id="right_side">
+        <div id="main_dimmer" class="ui active inverted dimmer">
+            <div class="ui text loader">Loading</div>
+        </div>
+        <div id="main_view" class="ui segments" style="padding: .98rem">
+            <% switch (locals.type) {
+            case 'view':%>
+            <script>loadView('', '<%=path%>')</script>
+            <% break;
+                case 'modal':
+            %>
+            <script>showModal('', '<%=path%>', true)</script>
+            <% break;
+                default:
+                  %>
+            <%- include('index') %>
+            <% } %>
+        </div>
+        </div>
+    </div>
+</div>
+<footer>
+    <div class="ui raised compact center aligned segment" style="display: block; position: fixed; left:20%; right: 20%; bottom: 2rem;" id="banner">
+        <i class="close icon" style="float: right" onclick="hide_banner()"></i>
+        <b>Designed by SunriseFox&lt;sunrisefox@qq.com&gt; <br/> Under MIT License.</b>
+    </div>
+</footer>
+<div class="ui circular large basic blue button" style="display: block; position: fixed; left: 1rem; bottom: 1rem;" onclick="toggle_menu()"><i class="ellipsis horizontal icon" style="padding-left: 0.3rem"></i></div>
+<script src="/javascripts/footer_prod.js"></script>
+</body>
+</html>

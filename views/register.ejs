@@ -1,0 +1,80 @@
+<!--suppress ALL -->
+<div class="ui modal">
+    <div class="header">
+        注册
+    </div>
+    <div class="image content">
+        <div class="ui medium image">
+            <img src="https://api.adorable.io/avatars/512/random@vampire.png">
+        </div>
+        <div class="description" style="flex: 1 1 auto">
+            <div class="ui header">请填写以下信息：</div>
+            <form class="ui form" id="register_form">
+                <div class="ui icon violet error message">
+                    <i class="exclamation triangle icon"></i>
+                    <div class="content" id="err_content"></div>
+                </div>
+                <div class="required field">
+                    <label>学号</label>
+                    <input type="text" name="student_id" placeholder="Student ID">
+                </div>
+                <div class="required field">
+                    <label>昵称</label>
+                    <input type="text" name="nickname" placeholder="Nickname">
+                </div>
+                <div class="required field">
+                    <label>真实姓名</label>
+                    <input type="text" name="realname" placeholder="Real Name">
+                </div>
+                <div class="required field">
+                    <label>密码</label>
+                    <input type="password" name="password" placeholder="Password">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui deny button">
+            返回
+        </div>
+        <div class="ui positive right labeled icon button">
+            注册
+            <i class="checkmark icon"></i>
+        </div>
+    </div>
+</div>
+<script>
+  var modal = $('.ui.modal').modal({
+    closable: false,
+    onApprove: function () {
+      var form = $('#register_form')
+      var button = $('.positive.button')
+      button.addClass('loading')
+      $('input').parent('div').removeClass('error')
+      form.removeClass('error')
+      $.post({
+        url: '/register',
+        data: form.serialize(),
+        success: function (data) {
+          if (data.success)
+            history.back()
+          else {
+            var error = data.error
+            var err_elem = $('#err_content')
+            var err_info = ''
+            Object.keys(error).forEach(function (k) {
+              var elem = $('input[name=' + k + ']')
+              elem.parent('div').addClass('error')
+              var hint = elem.siblings('label').html()
+              err_info += ('<div><b>' + hint + ' </b>' + error[k] + '</div>')
+            })
+            err_elem.html(err_info)
+            form.addClass('error')
+            button.removeClass('loading')
+          }
+        }
+      })
+      return false
+    }
+  })
+</script>
