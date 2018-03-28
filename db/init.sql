@@ -6,7 +6,7 @@ create schema if not exists public;
 create table roles (
     role_id serial primary key,
     title text not null,
-    perm integer
+    perm integer not null 
 );
 
 insert into roles(title, perm)
@@ -14,7 +14,7 @@ insert into roles(title, perm)
 
 create table _users (
     id serial primary key,
-    password text,
+    password text not null ,
     student_id text unique not null,
     nickname varchar(30) unique not null,
     realname varchar(30) not null,
@@ -32,8 +32,8 @@ create view users AS
 
 create table uploads (
     upload_id serial primary key,
-    origin_file varchar(255),
-    stored_name text,
+    origin_file varchar(255) not null,
+    stored_name text not null,
     downloaded integer not null default 0,
     since timestamp default current_timestamp
 );
@@ -46,7 +46,7 @@ create table _tasks (
     accepted integer not null default 0,
     submitted integer not null default 0,
     approved integer not null default 0,
-    since timestamp default current_timestamp,
+    since timestamp not null default current_timestamp,
     during tsrange
 );
 
@@ -133,8 +133,8 @@ create view feeds as
 
 
 create table feed_stars (
-    user_id integer references _users(id) ON DELETE CASCADE,
-    feed_id integer references _feeds(feed_id) ON DELETE CASCADE,
+    user_id integer not null references _users(id) ON DELETE CASCADE,
+    feed_id integer not null references _feeds(feed_id) ON DELETE CASCADE,
     primary key (user_id, feed_id)
 );
 
