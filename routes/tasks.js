@@ -82,7 +82,7 @@ router.get('/:i/:type', db.checkLoggedIn() , async (req, res, next) => {
   res.fail()
 })
 
-router.get('/:i/approve/:j', db.checkLoggedIn(), async function(req, res) {
+router.get('/:i/approve/:j', db.checkIsAdmin(), async function(req, res) {
   'use strict'
   const task_id = Number(req.params.i)
   const assignment_id = Number(req.params.j)
