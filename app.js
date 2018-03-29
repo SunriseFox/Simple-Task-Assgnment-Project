@@ -74,10 +74,20 @@ app.use((req, res, next) => {
   next()
 })
 
+const checkXMLHTTPRequest = (modal) => (req, res, next) => {
+  'use strict'
+  if (req.get('X-Requested-With') !== 'XMLHttpRequest')
+   res.render('frame', {type: modal?'modal':'view'})
+  else next()
+}
+
+app.use('/register',checkXMLHTTPRequest(true), require('./routes/register'))
+app.use('/login', checkXMLHTTPRequest(true), db.checkNotLoggedIn(), require('./routes/login'))
+
+app.use(checkXMLHTTPRequest(false))
+
 app.use('/', require('./routes/index'))
 app.use('/index', require('./routes/index'))
-app.use('/register', require('./routes/register'))
-app.use('/login', db.checkNotLoggedIn(), require('./routes/login'))
 app.use('/logout',   require('./routes/logout'))
 app.use('/admin', db.checkIsAdmin(), require('./routes/admin'))
 app.use('/tasks', require('./routes/tasks'))
