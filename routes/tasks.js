@@ -42,7 +42,7 @@ router.post('/:i', db.checkLoggedIn(), async (req, res, next) => {
   const task_id = Number(req.params.i)
   if(!Number.isInteger(task_id)) next()
   const ret = await db.query('select accepted, submitted, approved from _assignments where user_id = $1 and task_id = $2', [req.session.user, task_id])
-  if(ret.rows.length === 0 || !ret.rows[0].accepted || ret.rows[0].approved || ret.rows[0].submitted) return res.fail()
+  if(ret.rows.length === 0 || !ret.rows[0].accepted || ret.rows[0].approved >= 0 || ret.rows[0].submitted) return res.fail()
   upload.single('file')(req, res, async () => {
     if(!req.file) return res.fail()
     const ret = await db.query('update assignments set submitted = TRUE, origin_file = $1, stored_name = $2 where user_id = $3 and task_id = $4 returning *'
@@ -82,18 +82,23 @@ router.get('/:i/:type', db.checkLoggedIn() , async (req, res, next) => {
   res.fail()
 })
 
-router.get('/:i/approve/:j', db.checkIsAdmin(), async function(req, res) {
+router.get('/approve/:i/:j/:k', db.checkIsAdmin(), async function(req, res) {
   'use strict'
-  const task_id = Number(req.params.i)
-  const assignment_id = Number(req.params.j)
-  if(!Number.isInteger(task_id) || !Number.isInteger(assignment_id)) return res.fail()
-
-  const ret = await db.query('update assignments set approved = TRUE where task_id = $1 and assignment_id = $2 returning *', [task_id, assignment_id])
-  if(ret.rows.length) {
-    res.ok()
-    return db.addToFeeds(ret.rows[0].user_id, 'finish', task_id, ret.rows[0].upload_id)
+  const assignment_id = Number(req.params.i)
+  const score = Number.isInteger(Number(req.params.j)) ? Number(req.params.j) : -1
+  const task_id = Number(req.params.k)
+  if(!Number.isInteger(assignment_id) || !Number.isInteger(task_id)) return res.fail()
+  try{
+    const ret = await db.query('update assignments set score = $1 where assignment_id = $2 returning *', [score, assignment_id])
+    if(ret.rows.length) {
+      res.ok()
+      if(score >= 0) return await db.addToFeeds(ret.rows[0].user_id, 'finish', task_id, ret.rows[0].upload_id)
+    }else {
+      res.fail()
+    }
+  } catch (e) {
+    res.fail()
   }
-  res.fail()
 });
 
 module.exports = router;

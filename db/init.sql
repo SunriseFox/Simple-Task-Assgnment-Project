@@ -1,6 +1,8 @@
-drop schema if exists public cascade;
 
 begin;
+
+drop schema if exists public cascade;
+
 create schema if not exists public;
 
 create table roles (
@@ -10,7 +12,7 @@ create table roles (
 );
 
 insert into roles(title, perm)
-    values ('Student', 1), ('Admin', 9);
+    values ('学生', 1), ('管理员', 9);
 
 create table _users (
     id serial primary key,
@@ -23,7 +25,7 @@ create table _users (
 );
 
 insert into _users(student_id, password, nickname, realname, role_id)
-    values ('000000', '123465', 'SunriseFox', 'System Admin', 2);
+    values ('000000', '123465', 'SunriseFox', '馆里猿', 2);
 
 create view users AS
     select  _users.id as uid, md5(_users.password) as password, _users.student_id, _users.nickname, _users.realname,
@@ -64,12 +66,12 @@ create table _assignments (
     since timestamp default current_timestamp,
     accepted boolean not null default 't',
     submitted boolean not null default 'f',
-    approved boolean not null default 'f',
+    approved smallint not null default -1 check(approved <= 100),
     unique (task_id, user_id)
 );
 
 create view assignments as
-    select _assignments.assignment_id, _assignments.task_id, _assignments.user_id, _assignments.accepted, _assignments.submitted, _assignments.approved, _assignments.since,
+    select _assignments.assignment_id, _assignments.task_id, _assignments.user_id, _assignments.accepted, _assignments.submitted, CASE WHEN  (_assignments.approved >= 0) THEN 't'::boolean ELSE 'f'::boolean END as approved  , _assignments.approved as score, _assignments.since,
         uploads.upload_id, uploads.origin_file, uploads.stored_name, uploads.downloaded, uploads.since as submitted_time
     from _assignments
     left outer join uploads on _assignments.upload_id = uploads.upload_id;
@@ -78,17 +80,17 @@ create view user_brief as
     select user_id
     , SUM(CASE WHEN accepted THEN 1 ELSE 0 END) as uac
     , SUM(CASE WHEN submitted THEN 1 ELSE 0 END) as usu
-    , SUM(CASE WHEN approved THEN 1 ELSE 0 END) as uap
+    , SUM(CASE WHEN (approved >= 0) THEN 1 ELSE 0 END) as uap
     , SUM(CASE WHEN accepted THEN 0 ELSE 1 END) as uab
      from _assignments group by user_id;
 
 create or replace view user_state as
-    select _users.id, _users.student_id, _users.realname, _users.nickname, assignments.assignment_id, assignments.task_id, assignments.accepted as uac, assignments.submitted as usu, assignments.approved as uap
+    select _users.id, _users.student_id, _users.realname, _users.nickname, assignments.assignment_id, assignments.task_id, assignments.accepted as uac, assignments.submitted as usu, assignments.approved as uap, assignments.score as usc
      , assignments.origin_file as uof, assignments.stored_name as usn, assignments.downloaded as udt, assignments.since as usi
      from assignments right outer join _users on assignments.user_id = _users.id;
 
 create or replace view user_assignments as
-    select tasks.*, assignments.user_id, assignments.accepted as uac, assignments.submitted as usu, assignments.approved as uap,
+    select tasks.*, assignments.user_id, assignments.accepted as uac, assignments.submitted as usu, assignments.approved as uap, assignments.score as usc,
      assignments.origin_file as uof, assignments.stored_name as usn, assignments.downloaded as udt, assignments.since as usi from assignments
     inner join tasks on tasks.task_id =  assignments.task_id;
 
@@ -108,7 +110,7 @@ create table feed_types (
     has_file boolean not null default 'f'::boolean
 );
 
-insert into feed_types(title, has_file) values ('Published', 't'), ('Accepted', 'f'), ('Submitted','t'), ('Finished', 't'), ('Reset', 'f'), ('Aborted', 'f');
+insert into feed_types(title, has_file) values ('发布了任务', 't'), ('接受了', 'f'), ('提交了文档','t'), ('完成了', 't'), ('重置了', 'f'), ('放弃了', 'f');
 
 create table _feeds (
     feed_id serial primary key,

@@ -125,16 +125,6 @@ function init_stars () {
     }
   })
 }
-function approveSubmit (i, j) {
-  showConfirmModal('要将提交 ' + i + ' 标记为完成吗？<br/> （用户无法修改已经完成的提交）', {
-    url: '/tasks/'+ i +'/approve/' + j,
-    success: function (data) {
-      if (data.success)
-        history.go(0)
-      else showFailedModal('失败了')
-    }
-  })
-}
 
 function showModal(which, where, clear) {
   $('.ui.modal').modal('hide');
@@ -171,14 +161,22 @@ function initialModalAndSow(which, json) {
   which.modal('show');
 }
 
-function showSuccessModal(text) {
+function showScoreModal(i, j) {
   loadModalFromData(
-    '<div class="ui basic modal" id="success_info">' +
-    '<div class="ui icon header"><i class="teal checkmark icon"></i>成功！</div>' +
-    '<div style="text-align: center;font-size: 1.2rem"><p>'+text+'</p></div>' +
+    '<div class="ui basic modal" id="score_info_' + i +'">' +
+    '<div class="ui icon header"><i class="teal checkmark icon"></i>请为该提交打分，-1 即取消当前打分：</div>' +
+    '<div class="ui form" style="text-align: center;font-size: 1.2rem"><input name="score" min="-1" max="100" /></div>' +
     '<div class="actions"><div class="ui green ok button">好的</div></div>' +
-    '</div>');
-  initialModalAndSow($('#success_info'), {inverted: true});
+    '</div>', true);
+  initialModalAndSow($('#score_info_'+i), {inverted: true, onApprove: function () {
+    $.get({
+      url: '/tasks/approve/' + i + '/' + $('#score_info_'+i + ' input[name="score"]').val() + '/' + j,
+      success: function (data) {
+        if(data.success) history.go(0)
+        else showFailedModal("失败了")
+      }
+    })
+   }});
 }
 function showFailedModal(text) {
   loadModalFromData(

@@ -99,7 +99,7 @@
             <td><a href="/files/<%= task.usn %>"><%= task.uof %></a></td>
             <td><%= new Date(task.usi).toLocaleString() %></td>
             <td><%= task.udt %></td>
-            <td><%= task.uap ? "已完成" : "待审核" %></td>
+            <td><%= task.uap ? ("已完成, "+ task.usc + "分")  : "待审核" %></td>
         </tr>
     </table>
 </div>
@@ -132,9 +132,9 @@
                 <a class="ui grey label">已放弃</a>
                 <%
                 } else if(all[i].uap) { %>
-                <a class="ui green label">已完成</a>
+                <a class="ui green label" <%= perm >= 9 ? ("onclick=showScoreModal(" + all[i].assignment_id + "," + task.task_id + ")") : "" %>>已完成, <b><%= all[i].usc %>分</b></a>
                 <% } else if(all[i].usu) { %>
-                <a class="ui olive label"<%= perm >= 9 ? (" onclick=taskApproveSubmit(" + all[i].assignment_id + ")") : "" %>>已提交
+                <a class="ui olive label" <%= perm >= 9 ? ("onclick=showScoreModal(" + all[i].assignment_id + "," + task.task_id +  ")") : "" %>>已提交
                     <% if (perm >= 9) { %>
                     <i class="key icon"></i>
                     <% } %>
@@ -175,7 +175,4 @@
     })
   })
 
-  function taskApproveSubmit (i) {
-    approveSubmit(<%= task.task_id %>, i)
-  }
 </script>

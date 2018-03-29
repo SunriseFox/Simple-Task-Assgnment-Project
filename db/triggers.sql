@@ -38,7 +38,7 @@ $$ LANGUAGE plpgsql RETURNS NULL ON NULL INPUT;
 CREATE TRIGGER _insert_assignments AFTER INSERT ON _assignments FOR EACH ROW EXECUTE PROCEDURE user_accept_task();
 
 
-create OR REPLACE function user_update_task() returns TRIGGER as $$
+CREATE OR REPLACE function user_update_task() returns TRIGGER as $$
 BEGIN
     IF NEW.accepted IS NOT NULL AND NEW.accepted IS DISTINCT FROM OLD.accepted THEN
         UPDATE _tasks SET accepted = accepted + CASE WHEN NEW.accepted THEN 1 ELSE -1 END WHERE task_id = NEW.task_id;
@@ -47,7 +47,7 @@ BEGIN
         UPDATE _tasks SET submitted = submitted + CASE WHEN NEW.submitted THEN 1 ELSE -1 END WHERE task_id = NEW.task_id;
     END IF;
     IF NEW.approved IS NOT NULL AND NEW.approved IS DISTINCT FROM OLD.approved THEN
-        UPDATE _tasks SET approved = approved + CASE WHEN NEW.approved THEN 1 ELSE -1 END WHERE task_id = NEW.task_id;
+        UPDATE _tasks SET approved = approved + CASE WHEN (NEW.approved >= 0) THEN 1 ELSE -1 END WHERE task_id = NEW.task_id;
     END IF;
     RETURN NEW;
 END;
@@ -74,7 +74,7 @@ DECLARE
     v_temp integer;
 BEGIN
     v_temp := NULL;
-    IF OLD.approved = TRUE AND NEW.approved <> FALSE THEN
+    IF OLD.approved = TRUE AND NEW.score <> -1 THEN
         RETURN NULL;
     END IF;
 
@@ -85,7 +85,7 @@ BEGIN
 
     UPDATE _assignments SET accepted = COALESCE(NEW.accepted, accepted)
         , submitted = COALESCE(NEW.submitted, submitted)
-        , approved = COALESCE(NEW.approved, approved)
+        , approved = COALESCE(NEW.score, approved)
         , upload_id = CASE WHEN COALESCE(NEW.submitted, submitted) THEN COALESCE(v_temp, upload_id) ELSE NULL END
         , since = current_timestamp
         WHERE user_id = NEW.user_id and task_id = NEW.task_id

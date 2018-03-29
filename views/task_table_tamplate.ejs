@@ -25,7 +25,7 @@
             } else if(tasks[i].uac === false) { %>
             <a onclick='loadView(this, "/tasks/<%= tasks[i].task_id %>")' class="ui grey label">已放弃</a><%
             } else if(tasks[i].uap) { %>
-            <a onclick='loadView(this, "/tasks/<%= tasks[i].task_id %>")' class="ui green label">已完成</a>
+            <a onclick='loadView(this, "/tasks/<%= tasks[i].task_id %>")' class="ui green label">已完成, <%= tasks[i].usc %> 分 </a>
             <% } else if(tasks[i].usu) {%>
             <a onclick='loadView(this, "/tasks/<%= tasks[i].task_id %>")' class="ui olive label">已提交</a>
             <% } else { %>

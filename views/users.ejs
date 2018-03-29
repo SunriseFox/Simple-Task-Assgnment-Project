@@ -79,9 +79,9 @@
                     <a class="ui grey label">已放弃</a>
                     <%
                     } else if(data[i].uap) { %>
-                    <a class="ui green label">已完成</a>
+                    <a class="ui green label">已完成　<b><%= data[i].usc %>分</b></a>
                     <% } else if(data[i].usu) { %>
-                    <a class="ui olive label"<%= perm >= 9 ? (" onclick='approveSubmit(" + data[i].task_id + ', ' + data[i].assignment_id + ")'") : "" %>>已提交
+                    <a class="ui olive label">已提交
                         <% if (perm >= 9) { %>
                         <i class="key icon"></i>
                         <% } %>
