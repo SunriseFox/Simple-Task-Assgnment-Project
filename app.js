@@ -83,7 +83,7 @@ const checkXMLHTTPRequest = (modal) => (req, res, next) => {
 
 app.use('/register',checkXMLHTTPRequest(true), require('./routes/register'))
 app.use('/login', checkXMLHTTPRequest(true), db.checkNotLoggedIn(), require('./routes/login'))
-
+app.use('/files', require('./routes/files'))
 app.use(checkXMLHTTPRequest(false))
 
 app.use('/', require('./routes/index'))
@@ -93,7 +93,6 @@ app.use('/admin', db.checkIsAdmin(), require('./routes/admin'))
 app.use('/tasks', require('./routes/tasks'))
 app.use('/assignments', db.checkLoggedIn(), require('./routes/assignments'))
 app.use('/users', db.checkLoggedIn(), require('./routes/users'))
-app.use('/files', require('./routes/files'))
 app.use('/star', db.checkLoggedIn(true), require('./routes/star'))
 app.use('/stars', db.checkLoggedIn(), require('./routes/stars'))
 app.use('/comments', db.checkLoggedIn(), require('./routes/comments'))
