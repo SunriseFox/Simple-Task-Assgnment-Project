@@ -56,8 +56,10 @@
         url: '/register',
         data: form.serialize(),
         success: function (data) {
-          if (data.success)
+          if (data.success) {
             history.back()
+            location.reload()
+          }
           else {
             var error = data.error
             var err_elem = $('#err_content')

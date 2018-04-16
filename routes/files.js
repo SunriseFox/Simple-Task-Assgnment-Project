@@ -10,4 +10,10 @@ router.get('/:filename', async function(req, res, next) {
     res.status(404)
 });
 
+router.get('/all/:i', async (req, res, next) => {
+  'use strict'
+  const ret = await db.query('select student_id, realname, uof, usn from user_state where task_id = $1 order by uap desc, usu desc, uac desc', Number(req.params.i))
+  res.json(ret.rows)
+})
+
 module.exports = router;

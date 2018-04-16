@@ -11,6 +11,7 @@ This project is developed for NKU's *Computer Organization and Design* class.
 ## How to use
 
 + Import init.sql and triggers.sql to your database (like `psql -U sunrisefox -d postgres -a -f init.sql` or something).
++ make a dir at /var/www/upload with perm 777 (?)
 + run `pm2 start bin/www --name co` or `node bin/www` only if you hate pm2.
 + it will run at `localhost:3000` by default. Enjoy.
 
